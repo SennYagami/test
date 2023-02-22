@@ -46,7 +46,4 @@ jobs:
           cd /nextjs-demo
           npm i
           pm2 reload nextjs-dem
------------------------------------
-©著作权归作者所有：来自51CTO博客作者youthfighter的原创作品，请联系作者获取转载授权，否则将追究法律责任
-基于Github Action部署Nextjs项目到阿里云ESC
-https://blog.51cto.com/youthfighter/4805540
+
