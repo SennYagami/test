@@ -19,4 +19,5 @@ jobs:
           script: |
             cd ~/projects/test
             source ~/.bashrc
+            export NVM_DIR="$HOME/.nvm"
             nvm use 18
