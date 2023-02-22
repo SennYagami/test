@@ -1,18 +1,52 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+# workflow名称
+name: build-and-deploy-nextjs
+# 对应第1步，master代码变动执行该workflow
+on:
+  push:
+    branches:
+      - master
 jobs:
-  Explore-GitHub-Actions:
+  build-and-deploy:
+    # 定义job运行环境，使用linux环境
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+    # 对应第2步，借助已有脚本拉取代码
+    - name: Checkout
+      uses: actions/checkout@master
+      
+    # 第3步的准备工作，先配置好node环境
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+    # 对应第3步，执行打包命令
+    - name: 'Build'
+      run: |
+        npm i
+        npm run build
+        
+    # 对应第4、5步，配置参数登陆服务器+拷贝到指定目录
+    - name: Upload
+      uses: appleboy/scp-action@master
+      with: 
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        # 拷贝 .next、public文件夹和package.json文件到服务器指定目录
+        source: ".next/,public/,package.json"
+        target: "/nextjs-demo"
+    
+    # 对应第6步，重启安装依赖、后端服务2
+    - name: Server Reload
+      uses: appleboy/ssh-action@master
+      with: 
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        script: |
+          cd /nextjs-demo
+          npm i
+          pm2 reload nextjs-dem
+-----------------------------------
+©著作权归作者所有：来自51CTO博客作者youthfighter的原创作品，请联系作者获取转载授权，否则将追究法律责任
+基于Github Action部署Nextjs项目到阿里云ESC
+https://blog.51cto.com/youthfighter/4805540
