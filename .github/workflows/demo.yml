@@ -1,5 +1,5 @@
 # workflow名称
-name: build-and-deploy-nextjs
+name: demo
 # 对应第1步，master代码变动执行该workflow
 on:
   push:
