@@ -17,7 +17,7 @@ jobs:
           username: ${{ secrets.REMOTE_USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            cd /projects/test
+            cd ~/projects/test
             git pull
             git checkout master
             nvm use 18
